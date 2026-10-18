@@ -1,54 +1,54 @@
 ########################################
 ##                                    ##
-##   TownyTweaks Configuration File   ##
+##       TownyTweaks の設定ファイル       ##
 ##                                    ##
 ########################################
-# TownyTweaks is an addon plugin for the Towny plugin.
-# You will find almost every feature that isn't in Towny here and you can always enable or disable it!
-# If one of the features TownyTweaks offers ends up added to Towny, it is recommended that you turn the feature off in this config
-# and configure the feature in the main Towny config file (/plugins/Towny/settings/)
+# TownyTweaks は Towny の追加プラグインです。
+# Towny にない機能を、ここでまとめて使えます。どの機能も、いつでも入り切りできます。
+# TownyTweaks の機能が Towny 本体に取り込まれたときは、この設定を切って、
+# Towny 本体の設定（/plugins/Towny/settings/）で設定することをおすすめします。
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Required Towny version for this plugin: 0.98.4.0.   #
-# Required Java version: 16.                          #
-# Required server type: Paper or any fork of Paper.   #
-# Required Minecraft version: 1.16.5 or above.        #
+# 必要な Towny:  0.98.4.0 以上                         #
+# 必要な Java:  16 以上                                #
+# サーバー:  Paper か、Paper の派生                     #
+# Minecraft:  1.16.5 以上                              #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 townytweaks-prefix: "§e[§bTownyTweaks§e]:§f "
-# TownyTweaks ingame output prefix.
+# ゲーム内のメッセージの先頭につける文字です。
 
 enable-armorstand-restriction: false
-# Set to false to allow armor stand interaction anywhere, as long as the manipulator has permissions to the plot the stand is in.
-# Set to true if you want the opposite, configure it below.
+# false なら、その区画の権限があるかぎり、どこでもアーマースタンドを操作できます。
+# true にすると、下の設定で決めた区画の種類でしか操作できなくなります。
 
 allow-armorstand-only-in-plottype: "edit-plot-type-name-here"
-# Change the "edit-plot-type-name-here" to the name of the only plot type you want armor stands to be interactable with in.
-# This also requires you to create the plot at the bottom of main Towny's config.yml incase you are using a custom plot type.
-# Give your admins townytweaks.admin.bypassarmorstand permission node if you want them to bypass this restriction.
+# アーマースタンドを操作できる区画の種類の名前に書き換えてください（"edit-plot-type-name-here" の部分）。
+# 独自の区画の種類を使うときは、Towny 本体の config.yml の末尾で、その区画を作っておく必要があります。
+# この制限を無視させたい管理者には、townytweaks.admin.bypassarmorstand の権限を渡してください。
 
 enable-shulker-restriction: false
-# Set to false to allow shulker boxes being broken and interacted with anywhere, as long as the player has permissions to the plot the shulker is in.
-# Set to true if you want the opposite, configure it below.
+# false なら、その区画の権限があるかぎり、どこでもシュルカーボックスを壊したり、開いたりできます。
+# true にすると、下の設定で決めた区画の種類でしか使えなくなります。
 
 allow-shulkers-only-in-plottype: "edit-plot-type-name-here"
-# Change the "edit-plot-type-name-here" to the name of the plot type you want shulker boxes to be only accessible in.
-# Give your admins townytweaks.admin.bypassshulkerbox permission node if you want them to bypass this restriction.
+# シュルカーボックスを使える区画の種類の名前に書き換えてください（"edit-plot-type-name-here" の部分）。
+# この制限を無視させたい管理者には、townytweaks.admin.bypassshulkerbox の権限を渡してください。
 
 enable-brew-barrels-restriction: false
-# Set to false if you don't use the Brewery plugin, or just don't want any restrictions to be implemented regarding brewery.
-# Set to true if you want the opposite, configure it below.
-# WARNING: You need atleast version 3.1 of the brewery plugin for the restriction to properly work.
-# Download: https://github.com/DieReicheErethons/Brewery
+# Brewery プラグインを使っていない、または制限したくないときは false のままにしてください。
+# true にすると、下の設定で決めた区画の種類でしか、醸造用の樽を使えなくなります。
+# 注意: 正しく動くには、Brewery 3.1 以上が必要です。
+# ダウンロード: https://github.com/DieReicheErethons/Brewery
 
 allow-barrels-only-in-plottype: "edit-plot-type-name-here"
-# Change the "edit-plot-type-name-here" to the name of the plot type you want brewing barrels to be only accessible in.
-# Give your admins townytweaks.admin.bypassbrew permission node if you want them to  bypass this restriction.
+# 醸造用の樽を使える区画の種類の名前に書き換えてください（"edit-plot-type-name-here" の部分）。
+# この制限を無視させたい管理者には、townytweaks.admin.bypassbrew の権限を渡してください。
 
 allow-pearl-in-besieged-towns: false
-# This was originally a feature on EarthPol and never got implemented into SiegeWar because the Gooius (Main SW Dev) had left around the same time
-# This feature will allow players to teleport in towns that are in an active siege zone while ignoring the Town's Flags that would otherwise deny it.
+# （SiegeWar 用）もともとは EarthPol にあった機能で、SiegeWar の主な開発者が離れたため、SiegeWar には取り込まれませんでした。
+# true にすると、攻城中の地域にある町へも、町の設定（フラグ）で禁止されていても、エンダーパールでテレポートできます。
 
 spawn-trap-prevention-in-capitals: false
-# This was originally made for EarthMC to prevent nation spawn trapping where a player would be in a surprise pvp zone.
-# This feature was updated to work with SiegeWar at the request of EarthPol's Devs. This was originally mostly written by @Warriorrrr.
+# もともとは EarthMC で、国のスポーン地点で待ち伏せ（スポーンの罠）をされ、不意打ちの PvP になるのを防ぐために作られた機能です。
+# EarthPol の開発者の依頼で、SiegeWar でも動くように直しました。もとのコードの大部分は @Warriorrrr が書いています。

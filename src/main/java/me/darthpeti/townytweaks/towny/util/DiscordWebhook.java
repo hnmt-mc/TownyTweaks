@@ -54,11 +54,37 @@ public class DiscordWebhook {
     }
 
     public void execute() throws IOException {
+        byte[] body = body();
+        URL url = new URL(this.url);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        connection.setInstanceFollowRedirects(false);
+        connection.addRequestProperty("Content-Type", "application/json; charset=utf-8");
+        connection.addRequestProperty("User-Agent", "TownyTweaks");
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        try (OutputStream stream = connection.getOutputStream()) {
+            stream.write(body);
+        }
+        int status = connection.getResponseCode();
+        connection.disconnect();
+        if (status < 200 || status >= 300) throw new IOException("Discord webhook returned HTTP " + status);
+    }
+
+    byte[] body() {
+        return toJson().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    String toJson() {
         if (this.content == null && this.embeds.isEmpty()) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
         }
 
         JSONObject json = new JSONObject();
+        JSONObject mentions = new JSONObject();
+        mentions.put("parse", new Object[0]);
+        json.put("allowed_mentions", mentions);
 
         json.put("content", this.content);
         json.put("username", this.username);
@@ -139,20 +165,7 @@ public class DiscordWebhook {
             json.put("embeds", embedObjects.toArray());
         }
 
-        URL url = new URL(this.url);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-
-        OutputStream stream = connection.getOutputStream();
-        stream.write(json.toString().getBytes());
-        stream.flush();
-        stream.close();
-
-        connection.getInputStream().close(); //I'm not sure why but it doesn't work without getting the InputStream
-        connection.disconnect();
+        return json.toString();
     }
 
     public static class EmbedObject {
@@ -384,7 +397,21 @@ public class DiscordWebhook {
         }
 
         private String quote(String string) {
-            return "\"" + string + "\"";
+            StringBuilder out = new StringBuilder("\"");
+            for (int i = 0; i < string.length(); i++) {
+                char c = string.charAt(i);
+                switch (c) {
+                    case '"': out.append("\\\""); break;
+                    case '\\': out.append("\\\\"); break;
+                    case '\n': out.append("\\n"); break;
+                    case '\r': out.append("\\r"); break;
+                    case '\t': out.append("\\t"); break;
+                    default:
+                        if (c < 0x20) out.append(String.format("\\u%04x", (int) c));
+                        else out.append(c);
+                }
+            }
+            return out.append('"').toString();
         }
     }
 

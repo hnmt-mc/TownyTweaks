@@ -52,18 +52,31 @@ public final class Main extends JavaPlugin {
 
         customConfig = new YamlConfiguration();
         try {
-            customConfig.load(customConfigFile);
+            customConfig.loadFromString(new String(java.nio.file.Files.readAllBytes(customConfigFile.toPath()), java.nio.charset.StandardCharsets.UTF_8));
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            getLogger().log(java.util.logging.Level.SEVERE, "webhook.yml を読み込めませんでした", e);
         }
     }
 
     public void reloadCustomConfig(){
-        customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
+        customConfig = YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(
+                openUtf8(customConfigFile), java.nio.charset.StandardCharsets.UTF_8));
     }
 
     public FileConfiguration getCustomConfig() {
         return this.customConfig;
+    }
+
+    /** jar に同梱した webhook.yml。サーバー側の webhook.yml にキーが無いときの既定値に使う。 */
+    public FileConfiguration getBundledWebhookConfig() {
+        var stream = getResource("webhook.yml");
+        if (stream == null) return new YamlConfiguration();
+        return YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    private java.io.InputStream openUtf8(File file) {
+        try { return new java.io.FileInputStream(file); }
+        catch (IOException e) { return new java.io.ByteArrayInputStream(new byte[0]); }
     }
 
     public void registerListenersAndCommands(){

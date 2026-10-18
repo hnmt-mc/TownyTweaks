@@ -1,60 +1,70 @@
-# This configuration file will be used for discord-ingame announcements for your towny server!
-# With this , it is possible to let your players know on discord whenever a town/nation is made/deleted ingame.
-# Configure it below:
+# Discord への通知の設定です。町・国ができたとき、消えたときなどを、Discord に知らせます。
+# 通知を出すには、webhook-url を設定し、出したい通知の notification-○○ を true にしてください。
+# 設定ファイルを直したあとは /townytweaks reload で読み込み直せます。
 
+# Discord の Webhook の URL です（https://discord.com/api/webhooks/… の形だけ使えます）。
 webhook-url: "https://discord.com/api/webhooks/PUTSOMETHINGHERE"
-# Change this to your webhook's URL. This will be used for all notifications below.
 
-# Set to true to notify players on discord whenever a new town is made.
+# 市長・王の顔（Minecraft のスキン）を、通知の右上に出します。
+# face-url の %uuid% はプレイヤーのUUID（ハイフンなし）、%uuid_dashed% はハイフンありに置き換わります。
+# https の URL で、%uuid% か %uuid_dashed% を含むものだけ使えます。
+face-enabled: true
+face-url: "https://mc-heads.net/avatar/%uuid%/128"
+
+# 各通知の設定です。
+#   notification-○○ : true で通知する
+#   embed-○○        : true なら題名つきの埋め込み、false なら本文だけの文章
+#   title-○○        : 埋め込みの題名
+#   message-○○      : 本文。{…} のところは、実際の名前に置き換わります
+# 本文の中の ** で囲んだところは、Discord で太字になります。
+
+# 町ができたとき  {townName} 町の名前 / {mayorName} 市長の名前
 notification-town-creation: "false"
-# {townName} - The name of the town
-# {mayorName} - The name of the mayor
-message-town-creation: "A new town has been created! {townName} by {mayorName}"
-embed-town-creation: "false"
+embed-town-creation: "true"
+title-town-creation: "🏘️ 町ができました"
+message-town-creation: "**{townName}** が、**{mayorName}** によって建てられました。"
 
-# Set to true to notify players on discord whenever a town falls into ruins.
+# 町が廃墟になったとき  {townName} 町の名前
 notification-town-ruins: "false"
-# {townName} - The name of the town
-message-town-ruins: "The town {townName} has fallen into ruins!"
-embed-town-ruins: "false"
+embed-town-ruins: "true"
+title-town-ruins: "🏚️ 町が廃墟になりました"
+message-town-ruins: "**{townName}** は、廃墟になりました。"
 
-# Set to true to notify players on discord whenever a town is fully deleted.
+# 町がなくなったとき  {townName} 町の名前 / {mayorName} 市長の名前
 notification-town-delete: "false"
-# {townName} - The name of the town
-message-town-delete: "The town {townName} has been deleted!"
-embed-town-delete: "false"
+embed-town-delete: "true"
+title-town-delete: "🍂 町がなくなりました"
+message-town-delete: "**{townName}** は、なくなりました。"
 
-# Set to true to notify players on discord whenever a new nation is made.
+# 国ができたとき  {nationName} 国の名前 / {kingName} 王の名前
 notification-nation-create: "false"
-# {nationName} - The name of the nation
-# {kingName} - The name of the king
-message-nation-create: "A new nation has been created! {nationName} by {kingName}"
-embed-nation-create: "false"
+embed-nation-create: "true"
+title-nation-create: "🏯 国ができました"
+message-nation-create: "**{nationName}** が、**{kingName}** によって建国されました。"
 
-# Set to true to notify players on discord whenever a nation is deleted/disbaned.
+# 国が解散したとき  {nationName} 国の名前 / {kingName} 王の名前
 notification-nation-disband: "false"
-# {nationName} - The name of the nation
-message-nation-disband: "The nation {nationName} has been disbanded!"
-embed-nation-disband: "false"
+embed-nation-disband: "true"
+title-nation-disband: "🍂 国が解散しました"
+message-nation-disband: "**{nationName}** は、解散しました。"
 
+# ここから下は、SiegeWar を入れているときだけ使います。
 
-# Set to true to notify players on discord whenever a new Siege session starts.
+# 戦いの時間帯が始まったとき
 notification-siegewar-session-start: "false"
-# Set to true to notify players on discord whenever a Siege session starts.
-message-siegewar-session-start: "A new Siege session has started!"
-embed-siegewar-session-start: "false"
+embed-siegewar-session-start: "true"
+title-siegewar-session-start: "⚔️ 戦いの時間です"
+message-siegewar-session-start: "戦いの時間帯が始まりました。"
 
-# Set to true to notify players on discord whenever a Siege session ends.
+# 戦いの時間帯が終わったとき
 notification-siegewar-session-end: "false"
-# Set to true to notify players on discord whenever a Siege session ends.
-message-siegewar-session-end: "The Siege session has ended!"
-embed-siegewar-session-end: "false"
+embed-siegewar-session-end: "true"
+title-siegewar-session-end: "🕊️ 戦いの時間が終わりました"
+message-siegewar-session-end: "戦いの時間帯が終わりました。"
 
+# 攻城が始まったとき
+#   {attacker} 攻める町 / {defender} 守る国（国がなければ町） / {townName} 攻められる町 / {siegeType} 攻城の種類
 notification-siegewar-siege-start: "false"
-# Set to true to notify players on discord when someone starts a Siege.
-# {attacker} - The name of the attacker
-# {defender} - The name of the defender
-# {townName} - The name of the town
-# {siegeType} - The type of the siege
-message-siegewar-siege-start: "{attacker} has started a Siege against {defender}!"
-embed-siegewar-siege-start: "false"
+embed-siegewar-siege-start: "true"
+title-siegewar-siege-start: "🔥 攻城が始まりました"
+message-siegewar-siege-start: "**{attacker}** が、**{defender}** の **{townName}** に攻め込みました。（{siegeType}）"
