@@ -10,7 +10,15 @@ import java.util.regex.Pattern;
 public final class NotificationFactory {
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([A-Za-z]+)}");
 
+    private static final int MAX_FIELDS = 25;
+    private static final int MAX_LABEL = 256;
+    private static final int MAX_VALUE = 1024;
+
     private NotificationFactory() { }
+
+    private static String cut(String text, int max) {
+        return text.length() <= max ? text : text.substring(0, max);
+    }
 
     public static DiscordWebhook create(WebhookSettings settings, String event, Map<String, String> values, Color color, UUID faceOwner) {
         if (!settings.enabled(event)) return null;
@@ -24,6 +32,15 @@ public final class NotificationFactory {
             if (!title.isEmpty()) embed.setTitle(title);
             String face = settings.faceEnabled() ? FaceUrl.build(settings.faceUrlTemplate(), faceOwner) : null;
             if (face != null) embed.setThumbnail(face);
+            int count = 0;
+            for (var field : settings.fields(event)) {
+                if (count >= MAX_FIELDS) break;
+                String label = fill(field.label(), values).trim();
+                String text = fill(field.value(), values).trim();
+                if (label.isEmpty() || text.replaceAll("[*_~|`\\s]", "").isEmpty()) continue;
+                embed.addField(cut(label, MAX_LABEL), cut(text, MAX_VALUE), true);
+                count++;
+            }
             webhook.addEmbed(embed);
         } else {
             webhook.setContent(message);

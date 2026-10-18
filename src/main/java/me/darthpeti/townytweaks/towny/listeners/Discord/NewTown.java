@@ -16,8 +16,10 @@ public class NewTown implements Listener {
 
     @EventHandler
     public void onEvent(NewTownEvent event) {
-        var mayor = event.getTown().getMayor();
-        Notifier.send("town-creation", Map.of("townName", event.getTown().getName(), "mayorName", mayor.getName()),
+        var town = event.getTown();
+        var mayor = town.getMayor();
+        Notifier.send("town-creation", Map.of("townName", town.getName(), "mayorName", mayor.getName(),
+                "residents", String.valueOf(town.getNumResidents()), "nationName", Notifier.nationNameOrNone(town)),
                 new Color(0, 81, 255), mayor.getUUID());
     }
 }

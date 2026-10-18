@@ -33,6 +33,40 @@ public final class WebhookSettings {
         return value == null ? "" : String.valueOf(value);
     }
 
+    /** 埋め込みの項目欄の定義（「ラベル|値」の形で書く）。 */
+    public record FieldTemplate(String label, String value) { }
+
+    public java.util.List<FieldTemplate> fields(String event) {
+        Object raw = value("fields-" + event);
+        var result = new java.util.ArrayList<FieldTemplate>();
+        if (!(raw instanceof java.util.List<?> list)) return result;
+        for (Object item : list) {
+            if (!(item instanceof String text)) continue;
+            int split = text.indexOf('|');
+            if (split <= 0) continue;
+            String label = text.substring(0, split).trim();
+            String value = text.substring(split + 1).trim();
+            if (!label.isEmpty() && !value.isEmpty()) result.add(new FieldTemplate(label, value));
+        }
+        return result;
+    }
+
+    /** 町・国がなくなった理由の日本語。group は "town" か "nation"。 */
+    public String reason(String group, String cause) {
+        if (cause != null) {
+            String text = text("reasons-" + group + "." + cause.toLowerCase(Locale.ROOT));
+            if (!text.isEmpty()) return text;
+        }
+        String unknown = text("reasons-unknown");
+        return unknown.isEmpty() ? "-" : unknown;
+    }
+
+    /** 「国なし」などに使う文言。 */
+    public String noneText() {
+        String text = text("text-none");
+        return text.isEmpty() ? "なし" : text;
+    }
+
     public boolean enabled(String event) { return bool("notification-" + event, false); }
     public boolean embed(String event) { return bool("embed-" + event, true); }
     public String message(String event) { return text("message-" + event); }

@@ -16,8 +16,11 @@ public class NewNation implements Listener {
 
     @EventHandler
     public void onEvent(NewNationEvent event) {
-        var king = event.getNation().getKing();
-        Notifier.send("nation-create", Map.of("nationName", event.getNation().getName(), "kingName", king.getName()),
-                new Color(0, 81, 255), king.getUUID());
+        var nation = event.getNation();
+        var king = nation.getKing();
+        var capital = nation.getCapital();
+        Notifier.send("nation-create", Map.of("nationName", nation.getName(), "kingName", king.getName(),
+                "capitalName", capital == null ? "" : capital.getName(), "towns", String.valueOf(nation.getNumTowns()),
+                "residents", String.valueOf(nation.getNumResidents())), new Color(0, 81, 255), king.getUUID());
     }
 }

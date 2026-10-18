@@ -13,58 +13,116 @@ face-url: "https://mc-heads.net/avatar/%uuid%/128"
 
 # 各通知の設定です。
 #   notification-○○ : true で通知する
-#   embed-○○        : true なら題名つきの埋め込み、false なら本文だけの文章
+#   embed-○○        : true なら題名と項目つきの埋め込み、false なら本文だけの文章
 #   title-○○        : 埋め込みの題名
-#   message-○○      : 本文。{…} のところは、実際の名前に置き換わります
-# 本文の中の ** で囲んだところは、Discord で太字になります。
+#   message-○○      : 本文。{…} のところは、実際の名前や数に置き換わります
+#   fields-○○       : 埋め込みの項目欄。「ラベル|値」の形で並べます（値が空の項目は出しません）。消すと項目なしになります
+# 本文と項目の値では、Discord の書式が使えます: **太字**、__下線__、*斜体*、~~取り消し線~~、改行は \n。
+# 名前など置き換わる値の中の書式は、無効になります（名前に * や _ があっても崩れません）。
+# 町の場所（座標）は、戦いで位置が知られるのを避けるため、載せられません。
 
-# 町ができたとき  {townName} 町の名前 / {mayorName} 市長の名前
+# 「国なし」などに使う言葉です。
+text-none: "なし"
+
+# 町ができたとき
+#   {townName} 町の名前 / {mayorName} 市長 / {residents} 人数 / {nationName} 所属する国（なければ text-none）
 notification-town-creation: "false"
 embed-town-creation: "true"
-title-town-creation: "🏘️ 町ができました"
-message-town-creation: "**{townName}** が、**{mayorName}** によって建てられました。"
+title-town-creation: "🏘️✨ 新しい町ができました"
+message-town-creation: "🌸 **{townName}** ができました！\n🎩 市長は **{mayorName}** さんです。"
+fields-town-creation:
+  - "🎩 市長|**{mayorName}**"
+  - "👥 人数|**{residents}** 人"
+  - "🏯 所属する国|**{nationName}**"
 
-# 町が廃墟になったとき  {townName} 町の名前
+# 町が廃墟になったとき
+#   {townName} 町の名前 / {mayorName} 前の市長 / {residents} 人数 / {blocks} 区画数 / {nationName} 所属していた国
 notification-town-ruins: "false"
 embed-town-ruins: "true"
-title-town-ruins: "🏚️ 町が廃墟になりました"
-message-town-ruins: "**{townName}** は、廃墟になりました。"
+title-town-ruins: "🏚️🌫️ 町が廃墟になりました"
+message-town-ruins: "🥀 **{townName}** が廃墟になりました。"
+fields-town-ruins:
+  - "🎩 前の市長|**{mayorName}**"
+  - "👥 人数|**{residents}** 人"
+  - "🧱 区画数|**{blocks}** 区画"
+  - "🏯 所属していた国|**{nationName}**"
 
-# 町がなくなったとき  {townName} 町の名前 / {mayorName} 市長の名前
+# 町がなくなったとき
+#   {townName} 町の名前 / {mayorName} 市長 / {blocks} 区画数 / {reason} なくなった理由（下の reasons-town）
 notification-town-delete: "false"
 embed-town-delete: "true"
-title-town-delete: "🍂 町がなくなりました"
-message-town-delete: "**{townName}** は、なくなりました。"
+title-town-delete: "🍂💨 町がなくなりました"
+message-town-delete: "🍃 **{townName}** がなくなりました。"
+fields-town-delete:
+  - "📜 理由|__{reason}__"
+  - "🎩 市長|**{mayorName}**"
+  - "🧱 区画数|**{blocks}** 区画"
 
-# 国ができたとき  {nationName} 国の名前 / {kingName} 王の名前
+# 国ができたとき
+#   {nationName} 国の名前 / {kingName} 王 / {capitalName} 首都の町 / {towns} 町の数 / {residents} 人数
 notification-nation-create: "false"
 embed-nation-create: "true"
-title-nation-create: "🏯 国ができました"
-message-nation-create: "**{nationName}** が、**{kingName}** によって建国されました。"
+title-nation-create: "🏯🎉 新しい国ができました"
+message-nation-create: "🎌 **{nationName}** が建国されました！\n👑 王は **{kingName}** さんです。"
+fields-nation-create:
+  - "👑 王|**{kingName}**"
+  - "🏛️ 首都|**{capitalName}**"
+  - "🏘️ 町の数|**{towns}** 町"
+  - "👥 人数|**{residents}** 人"
 
-# 国が解散したとき  {nationName} 国の名前 / {kingName} 王の名前
+# 国が解散したとき
+#   {nationName} 国の名前 / {kingName} 王 / {reason} 解散した理由（下の reasons-nation）
 notification-nation-disband: "false"
 embed-nation-disband: "true"
-title-nation-disband: "🍂 国が解散しました"
-message-nation-disband: "**{nationName}** は、解散しました。"
+title-nation-disband: "🍂💨 国が解散しました"
+message-nation-disband: "🍃 **{nationName}** が解散しました。"
+fields-nation-disband:
+  - "📜 理由|__{reason}__"
+  - "👑 王|**{kingName}**"
+
+# 町がなくなった理由です（Towny が知らせる原因の名前ごと）。
+reasons-town:
+  command: "市長が町を解散しました"
+  admin_command: "管理者が町を削除しました"
+  no_residents: "住民がいなくなりました"
+  no_townblocks: "区画がなくなりました"
+  merged: "ほかの町と合併しました"
+  ruined: "廃墟のまま時間が過ぎました"
+  upkeep: "維持費が払えませんでした"
+  bankruptcy: "資金が尽きました"
+  load: "起動時の読み込みで整理されました"
+  unknown: "理由は記録されていません"
+
+# 国が解散した理由です。
+reasons-nation:
+  command: "王が国を解散しました"
+  admin_command: "管理者が国を削除しました"
+  no_towns: "町がなくなりました"
+  not_enough_residents: "住民が足りなくなりました"
+  upkeep: "維持費が払えませんでした"
+  load: "起動時の読み込みで整理されました"
+  unknown: "理由は記録されていません"
+
+# 上に書いていない原因のときの言葉です。
+reasons-unknown: "理由はわかりません"
 
 # ここから下は、SiegeWar を入れているときだけ使います。
 
 # 戦いの時間帯が始まったとき
 notification-siegewar-session-start: "false"
 embed-siegewar-session-start: "true"
-title-siegewar-session-start: "⚔️ 戦いの時間です"
-message-siegewar-session-start: "戦いの時間帯が始まりました。"
+title-siegewar-session-start: "⚔️🔥 戦いの時間です"
+message-siegewar-session-start: "🛡️ **戦いの時間帯**が始まりました。"
 
 # 戦いの時間帯が終わったとき
 notification-siegewar-session-end: "false"
 embed-siegewar-session-end: "true"
-title-siegewar-session-end: "🕊️ 戦いの時間が終わりました"
-message-siegewar-session-end: "戦いの時間帯が終わりました。"
+title-siegewar-session-end: "🕊️🌅 戦いの時間が終わりました"
+message-siegewar-session-end: "🕊️ **戦いの時間帯**が終わりました。"
 
 # 攻城が始まったとき
 #   {attacker} 攻める町 / {defender} 守る国（国がなければ町） / {townName} 攻められる町 / {siegeType} 攻城の種類
 notification-siegewar-siege-start: "false"
 embed-siegewar-siege-start: "true"
-title-siegewar-siege-start: "🔥 攻城が始まりました"
-message-siegewar-siege-start: "**{attacker}** が、**{defender}** の **{townName}** に攻め込みました。（{siegeType}）"
+title-siegewar-siege-start: "🔥⚔️ 攻城が始まりました"
+message-siegewar-siege-start: "🗡️ **{attacker}** が、**{defender}** の **{townName}** に攻め込みました。\n⚔️ 種類: __{siegeType}__"

@@ -12,9 +12,25 @@ import java.util.logging.Level;
 public final class Notifier {
     private Notifier() { }
 
+    private static WebhookSettings settings() {
+        Main plugin = Main.getInstance();
+        return new WebhookSettings(plugin.getCustomConfig(), plugin.getBundledWebhookConfig());
+    }
+
+    /** 所属する国の名前。国がなければ「なし」にあたる言葉。 */
+    public static String nationNameOrNone(com.palmergames.bukkit.towny.object.Town town) {
+        var nation = town.getNationOrNull();
+        return nation != null ? nation.getName() : settings().noneText();
+    }
+
+    /** 町・国がなくなった理由の日本語。group は "town" か "nation"。 */
+    public static String reason(String group, Enum<?> cause) {
+        return settings().reason(group, cause == null ? null : cause.name());
+    }
+
     public static void send(String event, Map<String, String> values, Color color, UUID faceOwner) {
         Main plugin = Main.getInstance();
-        WebhookSettings settings = new WebhookSettings(plugin.getCustomConfig(), plugin.getBundledWebhookConfig());
+        WebhookSettings settings = settings();
         DiscordWebhook webhook;
         try {
             webhook = NotificationFactory.create(settings, event, values, color, faceOwner);

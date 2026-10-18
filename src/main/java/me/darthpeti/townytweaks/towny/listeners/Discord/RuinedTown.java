@@ -16,6 +16,10 @@ public class RuinedTown implements Listener {
 
     @EventHandler
     public void onEvent(TownRuinedEvent event) {
-        Notifier.send("town-ruins", Map.of("townName", event.getTown().getName()), new Color(214, 99, 84), null);
+        var town = event.getTown();
+        String oldMayor = event.getOldMayorName();
+        Notifier.send("town-ruins", Map.of("townName", town.getName(), "mayorName", oldMayor == null ? "" : oldMayor,
+                "residents", String.valueOf(town.getNumResidents()), "blocks", String.valueOf(town.getNumTownBlocks()),
+                "nationName", Notifier.nationNameOrNone(town)), new Color(214, 99, 84), null);
     }
 }

@@ -17,7 +17,8 @@ public class DeletedTown implements Listener {
     @EventHandler
     public void onEvent(DeleteTownEvent event) {
         var mayor = event.getMayor();
-        Notifier.send("town-delete", Map.of("townName", event.getTownName(), "mayorName", mayor == null ? "" : mayor.getName()),
+        Notifier.send("town-delete", Map.of("townName", event.getTownName(), "mayorName", mayor == null ? "" : mayor.getName(),
+                "blocks", String.valueOf(event.getNumTownBlocks()), "reason", Notifier.reason("town", event.getCause())),
                 new Color(214, 99, 84), event.getMayorUUID());
     }
 }

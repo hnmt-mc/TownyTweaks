@@ -23,6 +23,10 @@ class NotificationFactoryTest {
                     message-town-creation: "**{townName}** を {mayorName} が作りました"
                     title-town-creation: "町ができました"
                     embed-town-creation: true
+                    fields-town-creation:
+                      - "市長|**{mayorName}**"
+                      - "人数|**{residents}** 人"
+                      - "所属する国|__{nationName}__"
                     notification-town-delete: false
                     message-town-delete: "{townName} が消えました"
                     """ + extra);
@@ -61,5 +65,37 @@ class NotificationFactoryTest {
                 Map.of("townName", "@everyone_*x*", "mayorName", "{townName}"), Color.RED, ID).toJson();
         assertTrue(json.contains("**\\\\@everyone\\\\_\\\\*x\\\\*** を \\\\{townName} が作りました") || json.contains("**\\\\@everyone\\\\_\\\\*x\\\\*** を {townName} が作りました"), json);
         assertFalse(json.contains("@everyone_"), json);
+    }
+
+    @Test void addsInlineFieldsFilledFromTheValues() {
+        var json = NotificationFactory.create(settings(""), "town-creation",
+                Map.of("townName", "桜町", "mayorName", "taro", "residents", "3", "nationName", "なし"), Color.RED, ID).toJson();
+        assertTrue(json.contains("\"name\":\"市長\""), json);
+        assertTrue(json.contains("\"value\":\"**taro**\""), json);
+        assertTrue(json.contains("\"value\":\"**3** 人\""), json);
+        assertTrue(json.contains("\"inline\":true"), json);
+    }
+
+    @Test void skipsFieldsWhoseValueIsBlankAndCapsLengths() {
+        var json = NotificationFactory.create(settings(""), "town-creation",
+                Map.of("townName", "桜町", "mayorName", " ", "residents", "x".repeat(2000), "nationName", ""), Color.RED, ID).toJson();
+        assertFalse(json.contains("\"name\":\"市長\""), json);
+        assertFalse(json.contains("\"name\":\"所属する国\""), json);
+        assertFalse(json.contains("x".repeat(1025)), json);
+        assertTrue(json.contains("x".repeat(1000)), json);
+    }
+
+    @Test void skipsFieldsThatWouldShowOnlyEmptyFormatting() {
+        var json = NotificationFactory.create(settings(""), "town-creation",
+                Map.of("townName", "桜町", "mayorName", "", "residents", "3", "nationName", ""), Color.RED, ID).toJson();
+        assertFalse(json.contains("\"name\":\"市長\""), json);
+        assertFalse(json.contains("____"), json);
+        assertFalse(json.contains("****"), json);
+        assertTrue(json.contains("\"name\":\"人数\""), json);
+    }
+
+    @Test void plainTextModeIgnoresFields() {
+        var json = NotificationFactory.create(settings("embed-town-creation: false\n"), "town-creation", values(), Color.RED, ID).toJson();
+        assertFalse(json.contains("fields"), json);
     }
 }

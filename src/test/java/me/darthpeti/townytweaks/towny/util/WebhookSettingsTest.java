@@ -19,6 +19,14 @@ class WebhookSettingsTest {
             message-town-creation: "default message"
             title-town-creation: "default title"
             embed-town-creation: "true"
+            text-none: "なし"
+            fields-town-creation:
+              - "市長|{mayorName}"
+              - "人数|{residents}人"
+            reasons-town:
+              command: "市長が解散しました"
+              upkeep: "維持費が払えませんでした"
+            reasons-unknown: "理由は不明です"
             """;
 
     @Test void readsBooleansWrittenAsTextOrAsYamlBooleans() {
@@ -59,5 +67,26 @@ class WebhookSettingsTest {
                 "https://discord.com.evil.example/api/webhooks/1/abc", "https://discord.com/other", "",
                 "https://discord.com/api/webhooks/PUTSOMETHINGHERE", "https://user@discord.com/api/webhooks/1/abc"})
             assertNull(new WebhookSettings(yaml("webhook-url: \"" + bad + "\""), yaml(DEFAULTS)).webhookUrl(), bad);
+    }
+
+    @Test void readsFieldDefinitionsAsLabelAndValueTemplates() {
+        var settings = new WebhookSettings(yaml(""), yaml(DEFAULTS));
+        assertEquals(java.util.List.of(new WebhookSettings.FieldTemplate("市長", "{mayorName}"), new WebhookSettings.FieldTemplate("人数", "{residents}人")),
+                settings.fields("town-creation"));
+        assertEquals(java.util.List.of(), settings.fields("nope"));
+    }
+
+    @Test void userFieldListsReplaceTheDefaultsAndMalformedEntriesAreIgnored() {
+        var settings = new WebhookSettings(yaml("fields-town-creation:\n  - \"国|{nationName}\"\n  - \"区切りなし\"\n  - \"|値だけ\"\n  - 5\n"), yaml(DEFAULTS));
+        assertEquals(java.util.List.of(new WebhookSettings.FieldTemplate("国", "{nationName}")), settings.fields("town-creation"));
+    }
+
+    @Test void translatesReasonsCaseInsensitivelyWithAFallback() {
+        var settings = new WebhookSettings(yaml(""), yaml(DEFAULTS));
+        assertEquals("市長が解散しました", settings.reason("town", "COMMAND"));
+        assertEquals("維持費が払えませんでした", settings.reason("town", "upkeep"));
+        assertEquals("理由は不明です", settings.reason("town", "SOMETHING_NEW"));
+        assertEquals("理由は不明です", settings.reason("town", null));
+        assertEquals("なし", settings.noneText());
     }
 }
